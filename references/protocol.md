@@ -146,7 +146,6 @@
 
 - 只放运行时辅助信息
 - 可以为空对象
-- 可以包含 `codex.ai_task_path`
 - 不要把厂商专属字段塞进协议顶层
 
 ## 任务生命周期
@@ -187,12 +186,6 @@
 - `archive_policy`
 
 未知 key 一律忽略。
-
-## ai-task 边界
-
-- `ai-task` 只作为线程态镜像
-- `.agent-handoff/` 才是 durable source of truth
-- 即使 `ai-task` 不存在、失败或不在版本控制内，也不能影响主协议
 
 ## 自我迭代
 

@@ -8,7 +8,6 @@ from pathlib import Path
 from handoff_lib import (
     PROTOCOL_VERSION,
     SKILL_REVISION,
-    detect_ai_task_path,
     detect_branch,
     detect_default_owner,
     ensure_handoff_root,
@@ -17,7 +16,6 @@ from handoff_lib import (
     load_agents_overrides,
     now_iso,
     render_template,
-    sync_ai_task,
     write_index_and_active,
     write_text,
 )
@@ -40,7 +38,6 @@ def main() -> int:
     parser.add_argument("--next-step", default="补充任务事实与首个可执行动作", help="下一步")
     parser.add_argument("--status", default="active", help="初始状态，默认 active")
     parser.add_argument("--force", action="store_true", help="若任务目录已存在则覆盖")
-    parser.add_argument("--no-ai-task-sync", action="store_true", help="禁用 ai-task 镜像同步")
     args = parser.parse_args()
 
     repo_root = Path(args.repo_root).resolve()
@@ -61,9 +58,6 @@ def main() -> int:
     required_checks = args.required_check or list(overrides.get("required_checks", []))
     branch = detect_branch(repo_root)
     integrations = {}
-    ai_task_path = detect_ai_task_path(repo_root)
-    if ai_task_path:
-        integrations["codex"] = {"ai_task_path": ai_task_path}
 
     template_root = Path(__file__).resolve().parent.parent / "templates"
     mapping = {
@@ -90,8 +84,6 @@ def main() -> int:
     write_text(task_dir / "manifest.json", render_template(template_root / "manifest.json", mapping) + "\n")
 
     index_data = write_index_and_active(repo_root)
-    if not args.no_ai_task_sync:
-        sync_ai_task(repo_root, args.title, args.next_step)
 
     print(
         json_dump(

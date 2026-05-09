@@ -4,7 +4,6 @@ from __future__ import annotations
 import json
 import os
 import re
-import shutil
 import subprocess
 from datetime import datetime
 from pathlib import Path
@@ -12,7 +11,7 @@ from typing import Any
 
 HANDOFF_ROOT = ".agent-handoff"
 PROTOCOL_VERSION = 1
-SKILL_REVISION = "1.0.0"
+SKILL_REVISION = "1.0.1"
 ALLOWED_STATUSES = {"active", "blocked", "handoff-ready", "done", "archived"}
 ALLOWED_OVERRIDE_KEYS = {
     "truth_sources",
@@ -69,16 +68,6 @@ def render_template(template_path: Path, mapping: dict[str, str]) -> str:
     return content
 
 
-def is_git_repo(repo_root: Path) -> bool:
-    result = subprocess.run(
-        ["git", "-C", str(repo_root), "rev-parse", "--is-inside-work-tree"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL,
-        text=True,
-    )
-    return result.returncode == 0 and result.stdout.strip() == "true"
-
-
 def git_output(repo_root: Path, *args: str) -> str:
     result = subprocess.run(
         ["git", "-C", str(repo_root), *args],
@@ -99,56 +88,6 @@ def detect_branch(repo_root: Path) -> str:
 def detect_default_owner(repo_root: Path) -> list[str]:
     name = git_output(repo_root, "config", "--get", "user.name")
     return [name] if name else []
-
-
-def detect_ai_task_path(repo_root: Path) -> str:
-    if shutil.which("ai-task") is None:
-        return ""
-    result = subprocess.run(
-        ["ai-task", "path"],
-        cwd=repo_root,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL,
-        text=True,
-    )
-    if result.returncode != 0:
-        return ""
-    return result.stdout.strip()
-
-
-def sync_ai_task(repo_root: Path, title: str, next_step: str) -> None:
-    if shutil.which("ai-task") is None or not is_git_repo(repo_root):
-        return
-    show = subprocess.run(
-        ["ai-task", "show"],
-        cwd=repo_root,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL,
-        text=True,
-    )
-    existing = show.stdout.strip()
-    target = f"目标：{title} 关键约束：以 .agent-handoff 为事实源；下一步：{next_step}"
-    try:
-        if show.returncode != 0 or "尚未记录任务摘要" in existing:
-            subprocess.run(
-                ["ai-task", "set", target],
-                cwd=repo_root,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                text=True,
-                check=False,
-            )
-        else:
-            subprocess.run(
-                ["ai-task", "append", f"进展：已同步 .agent-handoff。下一步：{next_step}"],
-                cwd=repo_root,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                text=True,
-                check=False,
-            )
-    except OSError:
-        return
 
 
 def extract_override_block_text(agents_path: Path) -> str:

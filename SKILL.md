@@ -7,7 +7,7 @@ description: Use when a repository needs durable, repo-tracked handoff state for
 
 为仓库建立一套可追踪、可交接、可机读的 handoff 协议。它解决的不是“如何写很长的工作报告”，而是“让下一个 agent 在不读聊天历史的前提下，能立刻知道现在是什么状态、先做什么、证据在哪”。
 
-默认事实源是仓库内 `.agent-handoff/`。`ai-task` 只是可选的线程态镜像，不是 durable source of truth。
+默认事实源是仓库内 `.agent-handoff/`。skill 本身不假设任何用户级包装器、线程态摘要工具或平台专属运行时存在。
 
 ## 什么时候用
 
@@ -33,7 +33,6 @@ description: Use when a repository needs durable, repo-tracked handoff state for
 - `handoff.md` 必须明显短于 `task.md`。它只回答“下一位先看什么、先做什么、哪些已经验证过”。
 - 图片、截图、JSON 证据不能散落在 `.agent-handoff/` 根目录，只能进对应任务的 `evidence/`。
 - 任务完成且无需继续交接时，把任务目录移入 `archive/`，不要把旧任务长期留在 `tasks/`。
-- 如果环境里有 `ai-task`，可以同步一份极短 brief；如果没有，也不得影响主协议。
 
 ## 默认工作流
 
@@ -94,7 +93,6 @@ required_checks:
 - 不再需要继续 handoff 的任务，移动到 `archive/`
 - `manifest.json` 的 `status` 改为 `archived`
 - 重新渲染 `ACTIVE.md` 与 `index.json`
-- 必要时再同步一条极短 `ai-task clear`
 
 ## 脚本与模板
 
