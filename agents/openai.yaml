@@ -1,0 +1,7 @@
+interface:
+  display_name: "Agent Handoff"
+  short_description: "用统一协议维护跨会话、跨代理、可追踪的任务交接状态。"
+  default_prompt: "使用 $agent-handoff，为当前仓库建立或更新 .agent-handoff 交接状态，并生成最小可执行 handoff。"
+
+policy:
+  allow_implicit_invocation: true

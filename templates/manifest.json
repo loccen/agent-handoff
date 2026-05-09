@@ -1,0 +1,20 @@
+{
+  "task_id": "{{TASK_ID}}",
+  "title": "{{TITLE}}",
+  "status": "{{STATUS}}",
+  "created_at": "{{CREATED_AT}}",
+  "updated_at": "{{UPDATED_AT}}",
+  "owners": {{OWNERS}},
+  "branch": "{{BRANCH}}",
+  "worktree": "{{WORKTREE}}",
+  "truth_sources": {{TRUTH_SOURCES_JSON}},
+  "next_step": "{{NEXT_STEP}}",
+  "blockers": [],
+  "evidence_paths": [],
+  "related_commits": [],
+  "related_tasks": [],
+  "supersedes": [],
+  "protocol_version": {{PROTOCOL_VERSION}},
+  "skill_revision": "{{SKILL_REVISION}}",
+  "integrations": {{INTEGRATIONS}}
+}

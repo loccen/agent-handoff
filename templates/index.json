@@ -1,0 +1,7 @@
+{
+  "protocol_version": {{PROTOCOL_VERSION}},
+  "skill_revision": "{{SKILL_REVISION}}",
+  "generated_at": "{{GENERATED_AT}}",
+  "active_tasks": [],
+  "archived_tasks": []
+}
